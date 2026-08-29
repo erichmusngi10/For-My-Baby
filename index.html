@@ -178,9 +178,71 @@
     @media (prefers-reduced-motion:reduce) {
       * { scroll-behavior:auto !important; animation:none !important; transition:none !important; }
     }
-  </style>
+  
+    .love-gate{
+      position:fixed;inset:0;z-index:999;
+      display:flex;align-items:center;justify-content:center;
+      padding:24px;
+      background:
+        radial-gradient(circle at 50% 25%, rgba(242,217,213,.12), transparent 32%),
+        #0f0f11;
+      transition:opacity .55s ease, visibility .55s ease;
+    }
+    .love-gate.hidden{opacity:0;visibility:hidden;}
+    .gate-inner{text-align:center;max-width:360px;}
+    .gate-heart{font-size:34px;margin-bottom:20px;}
+    .gate-inner h3{
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:40px;font-weight:500;line-height:1.05;
+      margin:0 0 14px;letter-spacing:-.03em;
+    }
+    .gate-inner p{color:var(--muted);line-height:1.6;margin:0 0 24px;}
+    .gate-btn{
+      appearance:none;border:0;border-radius:999px;
+      padding:15px 24px;background:var(--soft);color:#161616;
+      font-weight:700;font-size:15px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+    }
+    .music-pill{
+      position:fixed;right:14px;bottom:max(14px, env(safe-area-inset-bottom));
+      z-index:50;
+      display:flex;align-items:center;gap:8px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:10px 13px;
+      background:rgba(24,24,27,.82);
+      backdrop-filter:blur(12px);
+      color:var(--text);
+      font-size:12px;
+      box-shadow:0 12px 30px rgba(0,0,0,.28);
+    }
+    .music-pill button{
+      margin:0;padding:0;background:transparent;color:inherit;
+      box-shadow:none;font-size:14px;font-weight:600;
+    }
+
+</style>
 </head>
 <body>
+
+  <div class="love-gate" id="loveGate">
+    <div class="gate-inner">
+      <div class="gate-heart">🤍</div>
+      <h3>For you, Lablab.</h3>
+      <p>I made this little page just for you. Tap below and take your time reading it.</p>
+      <button class="gate-btn" id="openLove">Open this 🤍</button>
+    </div>
+  </div>
+
+  <audio id="bgMusic" loop preload="auto">
+    <source src="bawat-daan.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="music-pill" id="musicPill" hidden>
+    <span id="musicIcon">♪</span>
+    <button id="musicToggle" type="button">Pause music</button>
+  </div>
+
   <main class="wrap">
     <section class="hero">
       <div class="eyebrow">no occasion. just love.</div>
@@ -270,5 +332,45 @@ Your Wifey 🤍</p>
       setTimeout(() => h.remove(), 2600);
     }
   </script>
+
+  <script>
+    const loveGate = document.getElementById('loveGate');
+    const openLove = document.getElementById('openLove');
+    const bgMusic = document.getElementById('bgMusic');
+    const musicPill = document.getElementById('musicPill');
+    const musicToggle = document.getElementById('musicToggle');
+    const musicIcon = document.getElementById('musicIcon');
+
+    bgMusic.volume = 0.55;
+
+    openLove.addEventListener('click', async () => {
+      loveGate.classList.add('hidden');
+      musicPill.hidden = false;
+      try {
+        await bgMusic.play();
+        musicToggle.textContent = 'Pause music';
+        musicIcon.textContent = '♪';
+      } catch (e) {
+        musicToggle.textContent = 'Play music';
+        musicIcon.textContent = '♡';
+      }
+      setTimeout(() => loveGate.remove(), 650);
+    });
+
+    musicToggle.addEventListener('click', async () => {
+      if (bgMusic.paused) {
+        try {
+          await bgMusic.play();
+          musicToggle.textContent = 'Pause music';
+          musicIcon.textContent = '♪';
+        } catch (e) {}
+      } else {
+        bgMusic.pause();
+        musicToggle.textContent = 'Play music';
+        musicIcon.textContent = '♡';
+      }
+    });
+  </script>
+
 </body>
 </html>
